@@ -8,7 +8,7 @@ function App() {
   const [id, setId] = useState(null);
   return (
     <>
-      <ItemSearch setId={setId} />
+      {/* <ItemSearch setId={setId} /> */}
       <ItemData />
     </>
   );
