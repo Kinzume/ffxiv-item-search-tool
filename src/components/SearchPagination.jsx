@@ -20,7 +20,7 @@ export default function SearchPagination({
     <Container>
       <Pagination
         size="large"
-        siblingCount={0}
+        siblingCount={3}
         count={pagination}
         defaultPage={0}
         page={paginationPageNumber}
