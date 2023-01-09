@@ -13,7 +13,7 @@ export default function SearchResults({
   noResults,
   loading,
   error,
-  setId,
+  setItem,
   handleClose,
 }) {
   return (
@@ -46,7 +46,7 @@ export default function SearchResults({
           results?.Results?.map((item, index) => (
             <ListItem
               onClick={() => {
-                setId(item?.ID);
+                setItem(item?.Url);
                 return handleClose();
               }}
               key={item?.ID}
