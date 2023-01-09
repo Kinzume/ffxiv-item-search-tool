@@ -5,11 +5,11 @@ import ItemSearch from "./components/ItemSearch";
 
 function App() {
   const [count, setCount] = useState(0);
-  const [id, setId] = useState(null);
+  const [item, setItem] = useState(null);
   return (
     <>
-      {/* <ItemSearch setId={setId} /> */}
-      <ItemData />
+      <ItemSearch setItem={setItem} />
+      <ItemData item={item} />
     </>
   );
 }

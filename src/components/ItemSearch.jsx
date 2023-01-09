@@ -22,7 +22,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   );
 });
 
-export default function ItemSearch({ setId }) {
+export default function ItemSearch({ setItem }) {
   //Item Search TODOs:
   // Fetch https://xivapi.com/search?indexes=Item
   // Display name and icon, add pagination and onclick logic
@@ -65,7 +65,7 @@ export default function ItemSearch({ setId }) {
     )
       .then((response) => response.json())
       .then((result) => {
-        // console.log(result);
+        console.log(result);
         setResults(result);
         if (!result?.Results.length) {
           setNoResults(true);
@@ -201,7 +201,7 @@ export default function ItemSearch({ setId }) {
           noResults={noResults}
           loading={loading}
           error={error}
-          setId={setId}
+          setItem={setItem}
           handleClose={handleClose}
         />
       </Dialog>
