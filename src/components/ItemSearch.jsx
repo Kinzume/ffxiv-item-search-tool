@@ -11,6 +11,7 @@ import SearchPagination from "./SearchPagination";
 import Button from "@mui/material/Button";
 import Container from "@mui/system/Container";
 import { useMediaQuery } from "@mui/material";
+import SearchFilters from "./SearchFilters";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return (
@@ -24,8 +25,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function ItemSearch({ setItem }) {
   //Item Search TODOs:
-  // Fetch https://xivapi.com/search?indexes=Item
-  // Display name and icon, add pagination and onclick logic
+
   // Add filters https://xivapi.com/search?indexes=Item&filters=LevelItem>35
 
   const [open, setOpen] = useState(false);
@@ -189,6 +189,7 @@ export default function ItemSearch({ setItem }) {
           <Container>
             <SearchField setQuery={setQuery} />
           </Container>
+
           <SearchPagination
             pagination={pagination}
             setPageNumber={setPageNumber}
@@ -196,6 +197,9 @@ export default function ItemSearch({ setItem }) {
             setPaginationPageNumber={setPaginationPageNumber}
           />
         </AppBar>
+        <Container>
+          <SearchFilters />
+        </Container>
         <SearchResults
           results={results}
           noResults={noResults}
