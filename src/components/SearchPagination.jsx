@@ -2,18 +2,10 @@ import { Container, Pagination } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import React, { useState } from "react";
 
-export default function SearchPagination({
-  pagination,
-  setPageNumber,
-  paginationPageNumber,
-  setPaginationPageNumber,
-}) {
-  // const [pageNumber, setPageNumber] = useState(1);
-
+export default function SearchPagination({ params, setParams, pagination }) {
   const handleChange = (event, page) => {
-    // console.log(page);
-    setPageNumber(page);
-    setPaginationPageNumber(page);
+    const newParams = { ...params, page: page };
+    setParams(newParams);
   };
 
   return (
@@ -23,7 +15,7 @@ export default function SearchPagination({
         siblingCount={3}
         count={pagination}
         defaultPage={0}
-        page={paginationPageNumber}
+        page={params.page}
         onChange={handleChange}
         sx={{
           p: 1,
