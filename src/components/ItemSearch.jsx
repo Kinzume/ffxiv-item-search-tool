@@ -11,7 +11,6 @@ import SearchPagination from "./SearchPagination";
 import Button from "@mui/material/Button";
 import Container from "@mui/system/Container";
 import { useMediaQuery } from "@mui/material";
-import SearchFilters from "./SearchFilters";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return (
@@ -23,35 +22,55 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   );
 });
 
+const createUrl = (stringQuery, filtersQuery, pageQuery) => {
+  const endpoint = "https://xivapi.com/search?indexes=item";
+  let string, filters, page;
+  if (stringQuery === "") {
+    string = "&string=";
+  } else {
+    string = "&string=" + stringQuery;
+  }
+  if (filtersQuery === "All Items") {
+    filters = "&filters=";
+  } else {
+    filters = "&filters=ItemUICategory.ID=" + filtersQuery;
+  }
+  if (pageQuery === "") {
+    page = "&page=";
+  } else {
+    page = "&page=" + pageQuery;
+  }
+
+  return endpoint + string + filters + page;
+};
+
+const initialParams = {
+  query: "",
+  filters: "All Items",
+  page: 1,
+};
+
 export default function ItemSearch({ setItem }) {
-  //Item Search TODOs:
-
-  // Add filters https://xivapi.com/search?indexes=Item&filters=LevelItem>35
-
   const [open, setOpen] = useState(false);
   const [results, setResults] = useState([]);
   const [pagination, setPagination] = useState(0);
-  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [noResults, setNoResults] = useState(false);
-  const [pageNumber, setPageNumber] = useState(0);
-  const [paginationPageNumber, setPaginationPageNumber] = useState(0);
   const matches = useMediaQuery("(min-width: 1200px)");
+  const [params, setParams] = useState(initialParams);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
   };
+
   useEffect(() => {
-    // if (query === "") return;
     setNoResults(false);
     setError(false);
     setLoading(true);
-    setPageNumber(0);
-    setPaginationPageNumber(0);
-    setPagination(0);
     const controller = new AbortController();
     const signal = controller.signal;
     const requestOptions = {
@@ -59,10 +78,8 @@ export default function ItemSearch({ setItem }) {
       redirect: "follow",
       signal: signal,
     };
-    fetch(
-      `https://xivapi.com/search?indexes=Item&string=${query}&page=1`,
-      requestOptions
-    )
+    const endpoint = createUrl(params.query, params.filters, params.page);
+    fetch(endpoint, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log(result);
@@ -70,11 +87,9 @@ export default function ItemSearch({ setItem }) {
         if (!result?.Results.length) {
           setNoResults(true);
           setPagination(result.Pagination.PageTotal);
-          setPaginationPageNumber(1);
           return setLoading(false);
         }
         setPagination(result.Pagination.PageTotal);
-        setPaginationPageNumber(1);
         return setLoading(false);
       })
       .catch((error) => {
@@ -86,39 +101,8 @@ export default function ItemSearch({ setItem }) {
       controller.abort();
       // console.log("Download aborted");
     };
-  }, [query]);
-  useEffect(() => {
-    if (pageNumber === 0) return;
-    setError(false);
-    setLoading(true);
-    const controller = new AbortController();
-    const signal = controller.signal;
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-      signal: signal,
-    };
-    fetch(
-      `https://xivapi.com/search?indexes=Item&string=${query}&page=${pageNumber}`,
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => {
-        // console.log(result);
-        setResults(result);
-        setPagination(result.Pagination.PageTotal);
-        return setLoading(false);
-      })
-      .catch((error) => {
-        if (signal.aborted) return;
-        console.log("error", error);
-        return setError(true);
-      });
-    return () => {
-      controller.abort();
-      // console.log("Download aborted");
-    };
-  }, [pageNumber]);
+  }, [params]);
+
   return (
     <div>
       <AppBar sx={{ backgroundColor: "white", padding: "0.8rem" }}>
@@ -187,19 +171,19 @@ export default function ItemSearch({ setItem }) {
             )}
           </Toolbar>
           <Container>
-            <SearchField setQuery={setQuery} />
+            <SearchField
+              params={params}
+              setParams={setParams}
+            />
           </Container>
 
           <SearchPagination
+            params={params}
+            setParams={setParams}
             pagination={pagination}
-            setPageNumber={setPageNumber}
-            paginationPageNumber={paginationPageNumber}
-            setPaginationPageNumber={setPaginationPageNumber}
           />
         </AppBar>
-        <Container>
-          <SearchFilters />
-        </Container>
+
         <SearchResults
           results={results}
           noResults={noResults}

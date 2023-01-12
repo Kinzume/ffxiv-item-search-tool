@@ -1,27 +1,20 @@
 import React, { useEffect, useState } from "react";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { alpha } from "@mui/material/styles";
+import { Skeleton } from "@mui/material";
 
-export default function SearchFilters() {
-  const matchesDefaultMd = useMediaQuery("(min-width:900px)");
-  const matchesDefaultLg = useMediaQuery("(min-width:1200px)");
+export default function SearchFilters({ filters, setFilters }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [results, setResults] = useState([]);
-  const [value, setValue] = useState(false);
-  const [age, setAge] = useState("");
-  const [filteredBy, setFilteredBy] = useState("(none)");
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setFilters(event.target.value);
   };
+
   useEffect(() => {
     setError(false);
     setLoading(true);
@@ -52,23 +45,61 @@ export default function SearchFilters() {
   }, []);
 
   return (
-    <FormControl fullWidth>
-      <InputLabel id="demo-simple-select-label">Categories</InputLabel>
+    <FormControl
+      fullWidth
+      sx={{ marginTop: "1rem" }}
+    >
+      <InputLabel
+        sx={{
+          color: alpha("#FFFFFF", 0.7),
+          "&.Mui-focused": {
+            color: alpha("#FFFFFF", 0.9),
+          },
+        }}
+        id="filter-label"
+      >
+        Filter
+      </InputLabel>
       <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        value={age}
-        label="Category"
+        sx={{
+          color: alpha("#FFFFFF", 0.9),
+          backgroundColor: alpha("#FFFFFF", 0.15),
+          ".MuiSelect-select": {
+            display: "flex",
+            gap: "1rem",
+            alignItems: "center",
+          },
+        }}
+        labelId="filter-select"
+        id="filter-select"
+        value={filters}
+        label="Filter"
         onChange={handleChange}
       >
-        {results.map((category) => (
-          <MenuItem
-            value={category.Name}
-            key={category.ID}
-          >
-            <img src={`https://xivapi.com${category.Icon}`} /> {category.Name}
-          </MenuItem>
-        ))}
+        <MenuItem value={"All Items"}>All Items</MenuItem>
+        {loading ? (
+          <Skeleton
+            height={200}
+            animation="wave"
+          />
+        ) : error ? (
+          <Skeleton
+            height={200}
+            animation={false}
+          />
+        ) : (
+          results.map((category) => (
+            <MenuItem
+              value={category.ID}
+              key={category.ID}
+              sx={{
+                gap: "1rem",
+              }}
+            >
+              <img src={`https://xivapi.com${category.Icon}`} /> {category.Name}
+            </MenuItem>
+          ))
+        )}
       </Select>
     </FormControl>
   );
