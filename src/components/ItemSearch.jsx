@@ -5,14 +5,15 @@ import Toolbar from "@mui/material/Toolbar";
 import Slide from "@mui/material/Slide";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
-import SearchField from "./SearchField";
+import SearchMenu from "./SearchMenu";
 import SearchResults from "./SearchResults";
 import SearchPagination from "./SearchPagination";
 import Button from "@mui/material/Button";
 import Container from "@mui/system/Container";
-import { useMediaQuery } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
+  // Animation for Dialog
   return (
     <Slide
       direction="up"
@@ -82,7 +83,7 @@ export default function ItemSearch({ setItem }) {
     fetch(endpoint, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         setResults(result);
         if (!result?.Results.length) {
           setNoResults(true);
@@ -104,9 +105,10 @@ export default function ItemSearch({ setItem }) {
   }, [params]);
 
   return (
-    <div>
+    <>
       <AppBar sx={{ backgroundColor: "white", padding: "0.8rem" }}>
         <Container>
+          {/* Opens ItemSearchMenu */}
           <Button
             onClick={handleClickOpen}
             sx={{
@@ -136,6 +138,7 @@ export default function ItemSearch({ setItem }) {
           <Toolbar
             sx={matches ? {} : { maxWidth: "1200px", marginRight: "auto" }}
           >
+            {/* Responsive close button */}
             {matches ? (
               <Container>
                 <Button
@@ -170,12 +173,11 @@ export default function ItemSearch({ setItem }) {
               </Button>
             )}
           </Toolbar>
-          <Container>
-            <SearchField
-              params={params}
-              setParams={setParams}
-            />
-          </Container>
+
+          <SearchMenu
+            params={params}
+            setParams={setParams}
+          />
 
           <SearchPagination
             params={params}
@@ -193,6 +195,6 @@ export default function ItemSearch({ setItem }) {
           handleClose={handleClose}
         />
       </Dialog>
-    </div>
+    </>
   );
 }

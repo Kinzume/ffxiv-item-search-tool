@@ -4,45 +4,25 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { alpha } from "@mui/material/styles";
-import { Skeleton } from "@mui/material";
+import ItemUICategory from "../data/ItemUICategory.json";
 
-export default function SearchFilters({ filters, setFilters }) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [results, setResults] = useState([]);
-
+export default function SearchFilters({
+  filters,
+  setFilters,
+  itemName,
+  params,
+  setParams,
+}) {
   const handleChange = (event) => {
     setFilters(event.target.value);
+    const newParams = {
+      ...params,
+      query: itemName,
+      filters: event.target.value,
+      page: 1,
+    };
+    setParams(newParams);
   };
-
-  useEffect(() => {
-    setError(false);
-    setLoading(true);
-    const controller = new AbortController();
-    const signal = controller.signal;
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-      signal: signal,
-    };
-    fetch(`https://xivapi.com/ItemUICategory?limit=109`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        // console.log(result.Results);
-        setResults(result.Results);
-        return setLoading(false);
-      })
-      .catch((error) => {
-        if (signal.aborted) return;
-        console.log("error", error);
-        return setError(true);
-      });
-
-    return () => {
-      controller.abort();
-      // console.log("Download aborted");
-    };
-  }, []);
 
   return (
     <FormControl
@@ -77,29 +57,17 @@ export default function SearchFilters({ filters, setFilters }) {
         onChange={handleChange}
       >
         <MenuItem value={"All Items"}>All Items</MenuItem>
-        {loading ? (
-          <Skeleton
-            height={200}
-            animation="wave"
-          />
-        ) : error ? (
-          <Skeleton
-            height={200}
-            animation={false}
-          />
-        ) : (
-          results.map((category) => (
-            <MenuItem
-              value={category.ID}
-              key={category.ID}
-              sx={{
-                gap: "1rem",
-              }}
-            >
-              <img src={`https://xivapi.com${category.Icon}`} /> {category.Name}
-            </MenuItem>
-          ))
-        )}
+        {ItemUICategory.Results.map((category) => (
+          <MenuItem
+            value={category.ID}
+            key={category.ID}
+            sx={{
+              gap: "1rem",
+            }}
+          >
+            <img src={`https://xivapi.com${category.Icon}`} /> {category.Name}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );
